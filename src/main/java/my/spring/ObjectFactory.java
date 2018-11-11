@@ -2,8 +2,10 @@ package my.spring;
 
 import lombok.SneakyThrows;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ObjectFactory {
     private static ObjectFactory instance;
@@ -21,9 +23,24 @@ public class ObjectFactory {
 
     @SneakyThrows
     public <T> T createObject(Class<T> type) {
+        Class<T> classToCreate = type;
         if (type.isInterface()) {
-            return (T) map.get(type).newInstance();
+            classToCreate = map.get(type);
         }
-        return type.newInstance();
+
+        T t = classToCreate.newInstance();
+
+        // random inject
+        for (Field field : classToCreate.getDeclaredFields()) {
+            InjectRandomInt injectRandomInt = field.getAnnotation(InjectRandomInt.class);
+            if (injectRandomInt != null) {
+                int min = injectRandomInt.min();
+                int max = injectRandomInt.max();
+                field.setAccessible(true);
+                field.set(t, ThreadLocalRandom.current().nextInt(min, max));
+            }
+        }
+
+        return t;
     }
 }
