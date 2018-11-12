@@ -16,6 +16,7 @@ public class ObjectFactory {
 
     public ObjectFactory() {
         configurators.add(new InjectRandomIntObjectConfigurator());
+        configurators.add(new InjectByTypeObjectConfigurator());
     }
 
     @SneakyThrows
