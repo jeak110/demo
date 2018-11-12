@@ -1,12 +1,15 @@
 package my.spring;
 
+import javax.annotation.PostConstruct;
+
 public class IRobot {
     @InjectByType
     private Speaker speaker;
     @InjectByType
     private Cleaner cleaner;
 
-    public IRobot() {
+    @PostConstruct
+    public void initIRobot() {
         System.out.println(cleaner.getName());
     }
 

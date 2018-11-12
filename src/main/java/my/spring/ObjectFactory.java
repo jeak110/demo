@@ -3,6 +3,8 @@ package my.spring;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +31,18 @@ public class ObjectFactory {
         Class<T> classToCreate = config.getClassImpl(type);
         T t = classToCreate.newInstance();
         configure(t);
+        invokeInitMethods(t);
 
         return t;
+    }
+
+    @SneakyThrows
+    private <T> void invokeInitMethods(T t) {
+        for (Method method : t.getClass().getDeclaredMethods()) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                method.invoke(t, null);
+            }
+        }
     }
 
     private <T> void configure(T t) {

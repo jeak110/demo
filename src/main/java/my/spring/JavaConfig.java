@@ -17,7 +17,7 @@ public class JavaConfig implements Config {
     @SneakyThrows
     public JavaConfig() {
         scanner = new Reflections(packagesToScan());
-        map.put(Speaker.class, PopupSpeaker.class);
+        map.put(Speaker.class, ConsoleSpeaker.class);
     }
 
     @Override
