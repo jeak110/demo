@@ -11,4 +11,9 @@ public class CleanerImpl implements Cleaner {
             System.out.println("VVVVVVVVvvvvvvvvvvvvvvv");
         }
     }
+
+    @Override
+    public String getName() {
+        return "Simple vacuum cleaner, v.0.0.1";
+    }
 }

@@ -6,6 +6,10 @@ public class IRobot {
     @InjectByType
     private Cleaner cleaner;
 
+    public IRobot() {
+        System.out.println(cleaner.getName());
+    }
+
     public void clean() {
         speaker.speak("Начал работу");
         cleaner.clean();
