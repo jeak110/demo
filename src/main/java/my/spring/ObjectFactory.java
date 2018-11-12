@@ -1,6 +1,7 @@
 package my.spring;
 
 import lombok.SneakyThrows;
+import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +10,18 @@ public class ObjectFactory {
     private static ObjectFactory instance;
     private Config config = new JavaConfig();
     private List<ObjectConfigurator> configurators = new ArrayList<>();
+    private Reflections scanner;
 
     public static ObjectFactory getInstance() {
         return instance == null ? instance = new ObjectFactory() : instance;
     }
 
+    @SneakyThrows
     public ObjectFactory() {
-        configurators.add(new InjectRandomIntObjectConfigurator());
-        configurators.add(new InjectByTypeObjectConfigurator());
+        scanner = new Reflections(config.packagesToScan());
+        for (Class<? extends ObjectConfigurator> configuratorClass : scanner.getSubTypesOf(ObjectConfigurator.class)) {
+            configurators.add(configuratorClass.newInstance());
+        }
     }
 
     @SneakyThrows

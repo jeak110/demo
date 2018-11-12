@@ -1,7 +1,10 @@
 package my.spring;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 public class JavaConfig implements Config {
     private Map<Class, Class> map = new HashMap<>();
@@ -19,5 +22,10 @@ public class JavaConfig implements Config {
             classToCreate = map.get(type);
         }
         return classToCreate;
+    }
+
+    @Override
+    public List<String> packagesToScan() {
+        return asList("my.spring");
     }
 }
