@@ -36,13 +36,13 @@ public class ObjectFactory {
         T t = classToCreate.newInstance();
         configure(t);
         invokeInitMethods(t);
-        t = wrapProxyIfNeeded(t);
+        t = wrapProxyIfNeeded(t, classToCreate);
         return t;
     }
 
-    private <T> T wrapProxyIfNeeded(T t) {
+    private <T> T wrapProxyIfNeeded(T t, Class type) {
         for (ProxyConfigurator proxyConfigurator : proxyConfigurators) {
-            t = (T) proxyConfigurator.wrapWithProxy(t);
+            t = (T) proxyConfigurator.wrapWithProxy(t, type);
         }
         return t;
     }

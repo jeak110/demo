@@ -8,28 +8,29 @@ import java.util.Arrays;
 
 public class LogPerformanceProxyConfigurator implements ProxyConfigurator {
     @Override
-    public Object wrapWithProxy(Object t) {
-        boolean annotationOnMethod = Arrays.stream(t.getClass().getDeclaredMethods())
+    public Object wrapWithProxy(Object t, Class type) {
+        boolean annotationOnMethod = Arrays.stream(type.getDeclaredMethods())
                 .anyMatch(m->m.isAnnotationPresent(LogPerformance.class));
 
-        if (t.getClass().isAnnotationPresent(LogPerformance.class) || annotationOnMethod) {
-            return Proxy.newProxyInstance(t.getClass().getClassLoader(), t.getClass().getInterfaces(), new InvocationHandler() {
+        if (type.isAnnotationPresent(LogPerformance.class) || annotationOnMethod) {
+            return Proxy.newProxyInstance(type.getClassLoader(), type.getInterfaces(), new InvocationHandler() {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    return wrapMethod(method, args, t);
+                    Method classMethod = type.getMethod(method.getName(), method.getParameterTypes());
+                    return wrapMethod(type, method, classMethod, t, args);
                 }
             });
         }
         return t;
     }
 
-    private Object wrapMethod(Method method, Object[] args, Object t) throws IllegalAccessException, InvocationTargetException {
-        if (t.getClass().isAnnotationPresent(LogPerformance.class) || method.isAnnotationPresent(LogPerformance.class)) {
-            PerformanceLogger.getInstance().logMethodStart(method.getName());
-            Object invoke = method.invoke(t, args);
-            PerformanceLogger.getInstance().logMethodEnd(method.getName());
+    private Object wrapMethod(Class type, Method invokeMethod, Method classMethod, Object t, Object[] args) throws IllegalAccessException, InvocationTargetException {
+        if (type.isAnnotationPresent(LogPerformance.class) || classMethod.isAnnotationPresent(LogPerformance.class)) {
+            PerformanceLogger.getInstance().logMethodStart(invokeMethod.getName());
+            Object invoke = invokeMethod.invoke(t, args);
+            PerformanceLogger.getInstance().logMethodEnd(invokeMethod.getName());
             return invoke;
         }
-        return method.invoke(t, args);
+        return invokeMethod.invoke(t, args);
     }
 }
