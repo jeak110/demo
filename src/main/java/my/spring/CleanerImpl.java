@@ -1,11 +1,12 @@
 package my.spring;
 
-@LogPerformance
+
 public class CleanerImpl implements Cleaner {
     @InjectRandomInt(min = 2, max = 5)
     private Integer repeat;
 
     @Override
+    @LogPerformance
     public void clean() {
         // clean logic
         for (int i = 0; i <= repeat; i++) {
