@@ -17,7 +17,7 @@ public class PerformanceLogger {
 
     public void logMethodEnd(String methodName) {
         System.out.println(methodName +
-                " started at " + DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()) +
+                " ended at " + DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now()) +
                 " Memory max = " + Runtime.getRuntime().maxMemory() + " / free = " + Runtime.getRuntime().freeMemory());
     }
 }
