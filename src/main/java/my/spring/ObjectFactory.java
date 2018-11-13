@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,19 @@ public class ObjectFactory {
         T t = classToCreate.newInstance();
         configure(t);
         invokeInitMethods(t);
+
+        if (t.getClass().isAnnotationPresent(LogPerformance.class)) {
+            return (T) Proxy.newProxyInstance(t.getClass().getClassLoader(), t.getClass().getInterfaces(), new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    PerformanceLogger.getInstance().logMethodStart(method.getName());
+                    Object invoke = method.invoke(t, args);
+                    PerformanceLogger.getInstance().logMethodEnd(method.getName());
+                    return invoke;
+                }
+            });
+        }
+
 
         return t;
     }
